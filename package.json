@@ -2,9 +2,9 @@
   "name": "jackettio",
   "version": "1.1.7",
   "description": "Jackett and Debrid on Stremio",
-  "main": "src/index.js",
+  "main": "src/index.mjs",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node --experimental-specifier-resolution=node --experimental-json-modules src/index.mjs"
   },
   "keywords": [
     "stremio",
@@ -22,5 +22,5 @@
     "showdown": "^2.1.0",
     "xml2js": "^0.6.2"
   },
-  "type": "commonjs"
+  "type": "module"
 }
