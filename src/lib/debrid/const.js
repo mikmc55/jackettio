@@ -1,5 +1,7 @@
-export const ERROR = {
-  NOT_READY: 'File not ready on debrid',
-  NOT_PREMIUM: 'You must be premium on debrid',
-  EXPIRED_API_KEY: 'Api key expired',
+module.exports = {
+  ERROR: {
+    NOT_READY: 'File is not ready for download',
+    EXPIRED_API_KEY: 'Debrid service API key has expired',
+    NOT_PREMIUM: 'Debrid service requires a premium account',
+  },
 };
