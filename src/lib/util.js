@@ -1,12 +1,14 @@
-export function numberPad(number, count = 2) {
+const { setTimeout } = require('timers/promises');
+
+function numberPad(number, count = 2) {
   return `${number}`.padStart(count, 0);
 }
 
-export function parseWords(str) {
+function parseWords(str) {
   return str.replace(/[^a-zA-Z0-9]+/g, ' ').split(' ').filter(Boolean);
 }
 
-export function sortBy(...keys) {
+function sortBy(...keys) {
   return (a, b) => {
     if (typeof keys[0] === 'string') keys = [keys];
     for (const [key, reverse] of keys) {
@@ -17,18 +19,18 @@ export function sortBy(...keys) {
   };
 }
 
-export function bytesToSize(bytes) {
+function bytesToSize(bytes) {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   if (bytes === 0) return '0 Byte';
   const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
   return `${Math.round(bytes / Math.pow(1024, i) * 100) / 100} ${sizes[i]}`;
 }
 
-export function wait(ms) {
+function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function isVideo(filename) {
+function isVideo(filename) {
   return [
     '3g2',
     '3gp',
@@ -52,7 +54,7 @@ export function isVideo(filename) {
   ].includes(filename?.split('.').pop());
 }
 
-export async function promiseTimeout(promise, ms) {
+async function promiseTimeout(promise, ms) {
   const ac = new AbortController();
   const waitPromise = new Promise((_, reject) =>
     setTimeout(() => reject(`Max execution time reached ${ms}`), ms)
@@ -62,3 +64,13 @@ export async function promiseTimeout(promise, ms) {
     return res;
   })]);
 }
+
+module.exports = {
+  numberPad,
+  parseWords,
+  sortBy,
+  bytesToSize,
+  wait,
+  isVideo,
+  promiseTimeout,
+};
