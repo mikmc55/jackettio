@@ -1,4 +1,4 @@
-const { createHash } = require('crypto');
+const crypto = require('crypto');
 const { ERROR } = require('./const.js');
 const { wait, isVideo } = require('../util.js');
 
@@ -26,9 +26,9 @@ class RealDebrid {
   }
 
   async getTorrentsCached(torrents, isValidCachedFiles) {
-    const hashList = torrents.map((torrent) => torrent.infos.infoHash).filter(Boolean);
+    const hashList = torrents.map(torrent => torrent.infos.infoHash).filter(Boolean);
     const res = await this.#request('GET', `/torrents/instantAvailability/${hashList.join('/')}`);
-    return torrents.filter((torrent) => {
+    return torrents.filter(torrent => {
       const cachedFiles = [];
       const caches = (res[torrent.infos.infoHash]?.rd || []).filter(this.#isVideoCache);
       for (const cache of caches) {
@@ -78,13 +78,11 @@ class RealDebrid {
     if (torrent.status == 'waiting_files_selection') {
       const caches = await this.#request('GET', `/torrents/instantAvailability/${torrent.hash}`);
       const bestCache = (caches[torrent.hash]?.rd || [])
-        .filter((cache) => cache[fileId] && this.#isVideoCache(cache))
+        .filter(cache => cache[fileId] && this.#isVideoCache(cache))
         .sort((a, b) => Object.values(b).length - Object.values(a).length)
         .shift();
 
-      const fileIds = bestCache
-        ? Object.keys(bestCache)
-        : torrent.files.filter((file) => isVideo(file.path)).map((file) => file.id);
+      const fileIds = bestCache ? Object.keys(bestCache) : torrent.files.filter(file => isVideo(file.path)).map(file => file.id);
       body = new FormData();
       body.append('files', fileIds.join(','));
 
@@ -96,7 +94,7 @@ class RealDebrid {
       throw new Error(ERROR.NOT_READY);
     }
 
-    const linkIndex = torrent.files.filter((file) => file.selected).findIndex((file) => file.id == fileId);
+    const linkIndex = torrent.files.filter(file => file.selected).findIndex(file => file.id == fileId);
     const link = torrent.links[linkIndex] || false;
 
     if (!link) {
@@ -110,16 +108,17 @@ class RealDebrid {
   }
 
   async getUserHash() {
-    return createHash('md5').update(this.#apiKey).digest('hex');
+    return crypto.createHash('md5').update(this.#apiKey).digest('hex');
   }
 
   // Return false when a non-video file is available in the cache to avoid rar files
   async #isVideoCache(cache) {
-    return !Object.values(cache).find((file) => !isVideo(file.filename));
+    return !Object.values(cache).find(file => !isVideo(file.filename));
   }
 
   async #getFilesFromTorrent(id) {
     let torrent = await this.#request('GET', `/torrents/info/${id}`);
+
     return torrent.files.map((file, index) => {
       return {
         name: file.path.split('/').pop(),
@@ -133,6 +132,7 @@ class RealDebrid {
 
   async #searchTorrentIdByHash(hash) {
     const torrents = await this.#request('GET', `/torrents`);
+
     for (let torrent of torrents) {
       if (torrent.hash == hash && ['magnet_conversion', 'waiting_files_selection', 'queued', 'downloading', 'downloaded'].includes(torrent.status)) {
         return torrent.id;
@@ -145,8 +145,8 @@ class RealDebrid {
     opts = Object.assign(opts, {
       method,
       headers: Object.assign(opts.headers || {}, {
-        'accept': 'application/json',
-        'authorization': `Bearer ${this.#apiKey}`,
+        accept: 'application/json',
+        authorization: `Bearer ${this.#apiKey}`,
       }),
       query: opts.query || {},
     });
