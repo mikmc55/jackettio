@@ -1,8 +1,8 @@
-import {createHash} from 'crypto';
-import {ERROR} from './const.js';
-import {wait} from '../util.js';
+const { createHash } = require('crypto');
+const { ERROR } = require('./const.js');
+const { wait } = require('../util.js');
 
-export default class DebridLink {
+class DebridLink {
 
   static id = 'debridlink';
   static name = 'Debrid-Link';
@@ -134,3 +134,5 @@ export default class DebridLink {
   }
 
 }
+
+module.exports = DebridLink;
