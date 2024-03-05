@@ -4,7 +4,8 @@ import localtunnel from 'localtunnel';
 import { readFileSync } from 'fs';
 import config from './lib/config.js';
 import cache from './lib/cache.js';
-import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import * as debrid from './lib/debrid.js';
 import { getIndexers } from './lib/jackett.js';
 import * as jackettio from './lib/jackettio.js';
@@ -16,6 +17,10 @@ const welcomeMessageHtml = config.welcomeMessage
   : '';
 const addon = JSON.parse(readFileSync(`./package.json`));
 const app = express();
+
+// Use import.meta.url to get the current module URL
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const respond = (res, data) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -34,7 +39,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, 'static')));
+app.use(express.static(join(__dirname, 'static')));
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path.replace(/\/eyJ[\w\=]+/g, '/*******************')}`);
@@ -48,35 +53,34 @@ app.get('/', (req, res) => {
 
 app.get('/:userConfig?/configure', async (req, res) => {
   let indexers = (await getIndexers().catch(() => []))
-    .map((indexer) => ({
+    .map(indexer => ({
       value: indexer.id,
       label: indexer.title,
-      types: ['movie', 'series'].filter((type) => indexer.searching[type].available),
+      types: ['movie', 'series'].filter(type => indexer.searching[type].available)
     }));
   const templateConfig = {
     debrids: await debrid.list(),
     addon: {
       version: addon.version,
-      name: addon.name.charAt(0).toUpperCase() + addon.name.slice(1),
+      name: addon.name.charAt(0).toUpperCase() + addon.name.slice(1)
     },
     userConfig: req.params.userConfig || '',
     defaultUserConfig: config.defaultUserConfig,
     qualities: config.qualities,
-    languages: config.languages.map((l) => ({ value: l.value, label: l.label })).filter((v) => v.value != 'multi'),
+    languages: config.languages.map(l => ({ value: l.value, label: l.label })).filter(v => v.value != 'multi'),
     sorts: config.sorts,
     indexers,
     passkey: { required: false },
-    immulatableUserConfigKeys: config.immulatableUserConfigKeys,
+    immulatableUserConfigKeys: config.immulatableUserConfigKeys
   };
   if (config.replacePasskey) {
     templateConfig.passkey = {
       required: true,
       infoUrl: config.replacePasskeyInfoUrl,
-      pattern: config.replacePasskeyPattern,
+      pattern: config.replacePasskeyPattern
     };
   }
-  let template = readFileSync(`./src/template/configure.html`)
-    .toString()
+  let template = readFileSync(`./src/template/configure.html`).toString()
     .replace('/** import-config */', `const config = ${JSON.stringify(templateConfig, null, 2)}`)
     .replace('<!-- welcome-message -->', welcomeMessageHtml);
   return res.send(template);
@@ -183,7 +187,7 @@ const server = app.listen(config.port, async () => {
     tunnel = await localtunnel({ port: config.port, subdomain });
     await cache.set('localtunnel:subdomain', tunnel.clientId, { ttl: 86400 * 365 });
     console.log(`Your addon is available on the following address: ${tunnel.url}/configure`);
-    tunnel.on('close', () => console.log('tunnels are closed'));
+    tunnel.on('close', () => console.log("tunnels are closed"));
   }
 
   createTorrentFolder();
