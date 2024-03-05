@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   // Server port
   port: parseInt(process.env.PORT || 4000),
   // https://expressjs.com/en/guide/behind-proxies.html
@@ -78,7 +78,7 @@ export default {
     lang.pattern = new RegExp(` ${lang.pattern} `, 'i');
     return lang;
   })
-}
+};
 
 function commaListToArray(str){
   return str.split(',').map(str => str.trim()).filter(Boolean);
@@ -94,9 +94,9 @@ function sortCommaListToArray(str){
 function boolOrString(str){
   if(str.trim().toLowerCase() == 'true'){
     return true;
-  }else if(str.trim().toLowerCase() == 'false'){
+  } else if(str.trim().toLowerCase() == 'false'){
     return false;
-  }else{
+  } else {
     return str.trim();
   }
 }
