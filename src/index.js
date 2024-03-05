@@ -1,14 +1,14 @@
-import showdown from 'showdown';
-import express from 'express';
-import localtunnel from 'localtunnel';
-import {readFileSync} from "fs";
-import config from './lib/config.js';
-import cache from './lib/cache.js';
-import path from 'path';
-import * as debrid from './lib/debrid.js';
-import {getIndexers} from './lib/jackett.js';
-import * as jackettio from "./lib/jackettio.js";
-import {cleanTorrentFolder, createTorrentFolder} from './lib/torrentInfos.js';
+const showdown = require('showdown');
+const express = require('express');
+const localtunnel = require('localtunnel');
+const { readFileSync } = require('fs');
+const config = require('./lib/config.js');
+const cache = require('./lib/cache.js');
+const path = require('path');
+const debrid = require('./lib/debrid.js');
+const { getIndexers } = require('./lib/jackett.js');
+const jackettio = require('./lib/jackettio.js');
+const { cleanTorrentFolder, createTorrentFolder } = require('./lib/torrentInfos.js');
 
 const converter = new showdown.Converter();
 const welcomeMessageHtml = config.welcomeMessage ? `${converter.makeHtml(config.welcomeMessage)}<div class="my-4 border-top border-secondary-subtle"></div>` : '';
