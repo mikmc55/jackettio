@@ -1,12 +1,5 @@
 import pLimit from 'p-limit';
-import {
-  parseWords,
-  numberPad,
-  sortBy,
-  bytesToSize,
-  wait,
-  promiseTimeout
-} from './util.js';
+import { parseWords, numberPad, sortBy, bytesToSize, wait, promiseTimeout } from './util.js';
 import config from './config.js';
 import cache from './cache.js';
 import * as meta from './meta.js';
