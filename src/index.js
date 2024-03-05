@@ -32,7 +32,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(import.meta.dirname, 'static')));
+app.use(express.static(path.join(__dirname, 'static')));
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path.replace(/\/eyJ[\w\=]+/g, '/*******************')}`);
