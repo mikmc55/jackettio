@@ -55,7 +55,7 @@ app.get('/:userConfig?/configure', async(req, res) => {
     debrids: await debrid.list(),
     addon: {
       version: addon.version,
-      name: addon.name.charAt(0).toUpperCase() + addon.name.slice(1)
+      name: "ES Jackett" // Change addon name here
     },
     userConfig: req.params.userConfig || '',
     defaultUserConfig: config.defaultUserConfig,
@@ -84,7 +84,7 @@ app.get("/:userConfig?/manifest.json", async(req, res) => {
   const manifest = {
     id: config.addonId,
     version: addon.version,
-    name: addon.ES,
+    name: "ES Jackett", // Change addon name here
     description: addon.description,
     icon: "https://avatars.githubusercontent.com/u/15383019?s=48&v=4",
     resources: ["stream"],
