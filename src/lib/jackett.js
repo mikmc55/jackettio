@@ -1,81 +1,72 @@
-import crypto from 'crypto';
-import {Parser} from "xml2js";
-import config from './config.js';
-import cache from './cache.js';
-import {numberPad} from './util.js';
+const crypto = require('crypto');
+const { Parser } = require('xml2js');
+const config = require('./config.js');
+const cache = require('./cache.js');
+const { numberPad } = require('./util.js');
 
-export const CATEGORY = {
+const CATEGORY = {
   MOVIE: 2000,
-  SERIES: 5000
+  SERIES: 5000,
 };
 
-export async function searchMovieTorrents({indexer, name, year}){
-
+async function searchMovieTorrents({ indexer, name, year }) {
   indexer = indexer || 'all';
   let items = await cache.get(`jackettItems:movie:${indexer}:${name}:${year}`);
 
-  if(!items){
+  if (!items) {
     const res = await jackettApi(
       `/api/v2.0/indexers/${indexer}/results/torznab/api`,
-      {t: 'movie',q: name, year: year}
+      { t: 'movie', q: name, year: year }
     );
     items = normalizeItems(res?.rss?.channel?.item || []);
-    cache.set(`jackettItems:movie:${indexer}:${name}:${year}`, items, {ttl: items.length > 0 ? 3600*36 : 60});
+    cache.set(`jackettItems:movie:${indexer}:${name}:${year}`, items, { ttl: items.length > 0 ? 3600 * 36 : 60 });
   }
 
   return items;
-
 }
 
-export async function searchSeasonTorrents({indexer, name, year, season}){
-
+async function searchSeasonTorrents({ indexer, name, year, season }) {
   indexer = indexer || 'all';
   let items = await cache.get(`jackettItems:season:${indexer}:${name}:${year}:${season}`);
 
-  if(!items){
+  if (!items) {
     const res = await jackettApi(
       `/api/v2.0/indexers/${indexer}/results/torznab/api`,
-      {t: 'tvsearch',q: `${name} S${numberPad(season)}`}
+      { t: 'tvsearch', q: `${name} S${numberPad(season)}` }
     );
     items = normalizeItems(res?.rss?.channel?.item || []);
-    cache.set(`jackettItems:season:${indexer}:${name}:${year}:${season}`, items, {ttl: items.length > 0 ? 3600*36 : 60});
+    cache.set(`jackettItems:season:${indexer}:${name}:${year}:${season}`, items, { ttl: items.length > 0 ? 3600 * 36 : 60 });
   }
 
   return items;
-
 }
 
-export async function searchEpisodeTorrents({indexer, name, year, season, episode}){
-
+async function searchEpisodeTorrents({ indexer, name, year, season, episode }) {
   indexer = indexer || 'all';
   let items = await cache.get(`jackettItems:episode:${indexer}:${name}:${year}:${season}:${episode}`);
 
-  if(!items){
+  if (!items) {
     const res = await jackettApi(
       `/api/v2.0/indexers/${indexer}/results/torznab/api`,
-      {t: 'tvsearch',q: `${name} S${numberPad(season)}E${numberPad(episode)}`}
+      { t: 'tvsearch', q: `${name} S${numberPad(season)}E${numberPad(episode)}` }
     );
     items = normalizeItems(res?.rss?.channel?.item || []);
-    cache.set(`jackettItems:episode:${indexer}:${name}:${year}:${season}:${episode}`, items, {ttl: items.length > 0 ? 3600*36 : 60});
+    cache.set(`jackettItems:episode:${indexer}:${name}:${year}:${season}:${episode}`, items, { ttl: items.length > 0 ? 3600 * 36 : 60 });
   }
 
   return items;
-
 }
 
-export async function getIndexers(){
-
+async function getIndexers() {
   const res = await jackettApi(
     '/api/v2.0/indexers/all/results/torznab/api',
-    {t: 'indexers', configured: 'true'}
+    { t: 'indexers', configured: 'true' }
   );
 
   return normalizeIndexers(res?.indexers?.indexer || []);
-
 }
 
-async function jackettApi(path, query){
-
+async function jackettApi(path, query) {
   const params = new URLSearchParams(query || {});
   params.set('apikey', config.jackettApiKey);
 
@@ -83,23 +74,22 @@ async function jackettApi(path, query){
 
   let data;
   const res = await fetch(url);
-  if(res.headers.get('content-type').includes('application/json')){
+  if (res.headers.get('content-type').includes('application/json')) {
     data = await res.json();
-  }else{
+  } else {
     const text = await res.text();
-    const parser = new Parser({explicitArray: false, ignoreAttrs: false});
+    const parser = new Parser({ explicitArray: false, ignoreAttrs: false });
     data = await parser.parseStringPromise(text);
   }
 
-  if(data.error){
+  if (data.error) {
     throw new Error(`jackettApi: ${url.replace(/apikey=[a-z0-9\-]+/, 'apikey=****')} : ${data.error?.$?.description || data.error}`);
   }
 
   return data;
-
 }
 
-function normalizeItems(items){
+function normalizeItems(items) {
   return forceArray(items).map(item => {
     item = mergeDollarKeys(item);
     const attr = item['torznab:attr'].reduce((obj, item) => {
@@ -118,7 +108,7 @@ function normalizeItems(items){
       seeders: parseInt(attr.seeders || 0),
       peers: parseInt(attr.peers || 0),
       infoHash: attr.infohash || '',
-      magneturl: attr.magneturl || '', 
+      magneturl: attr.magneturl || '',
       type: item.type,
       quality: quality ? parseInt(quality[1]) : 0,
       languages: languages
@@ -126,7 +116,7 @@ function normalizeItems(items){
   });
 }
 
-function normalizeIndexers(items){
+function normalizeIndexers(items) {
   return forceArray(items).map(item => {
     item = mergeDollarKeys(item);
     const searching = item.caps.searching;
@@ -139,11 +129,11 @@ function normalizeIndexers(items){
       categories: forceArray(item.caps.categories.category).map(category => parseInt(category.id)),
       searching: {
         movie: {
-          available: searching['movie-search'].available == 'yes', 
+          available: searching['movie-search'].available == 'yes',
           supportedParams: searching['movie-search'].supportedParams.split(',')
         },
         series: {
-          available: searching['tv-search'].available == 'yes', 
+          available: searching['tv-search'].available == 'yes',
           supportedParams: searching['tv-search'].supportedParams.split(',')
         }
       }
@@ -151,19 +141,27 @@ function normalizeIndexers(items){
   });
 }
 
-function mergeDollarKeys(item){
-  if(item.$){
-    item = {...item.$, ...item};
+function mergeDollarKeys(item) {
+  if (item.$) {
+    item = { ...item.$, ...item };
     delete item.$;
   }
-  for(let key in item){
-    if(typeof(item[key]) === 'object'){
+  for (let key in item) {
+    if (typeof (item[key]) === 'object') {
       item[key] = mergeDollarKeys(item[key]);
     }
   }
   return item;
 }
 
-function forceArray(value){
+function forceArray(value) {
   return Array.isArray(value) ? value : [value];
 }
+
+module.exports = {
+  CATEGORY,
+  searchMovieTorrents,
+  searchSeasonTorrents,
+  searchEpisodeTorrents,
+  getIndexers,
+};
