@@ -1,28 +1,33 @@
-import debridlink from "./debrid/debridlink.js";
-import alldebrid from "./debrid/alldebrid.js";
-import realdebrid from './debrid/realdebrid.js';
-export {ERROR} from './debrid/const.js';
+const debridlink = require("./debrid/debridlink.js");
+const alldebrid = require("./debrid/alldebrid.js");
+const realdebrid = require('./debrid/realdebrid.js');
+const { ERROR } = require('./debrid/const.js');
 
-const debrid = {debridlink, alldebrid, realdebrid};
+const debrid = { debridlink, alldebrid, realdebrid };
 
-export function instance(userConfig){
-
-  if(!debrid[userConfig.debridId]){
+function instance(userConfig) {
+  if (!debrid[userConfig.debridId]) {
     throw new Error(`Debrid service "${userConfig.debridId} not exists`);
   }
-  
+
   return new debrid[userConfig.debridId](userConfig);
 }
 
-export async function list(){
+async function list() {
   const values = [];
-  for(const instance of Object.values(debrid)){
+  for (const instance of Object.values(debrid)) {
     values.push({
       id: instance.id,
       name: instance.name,
       shortName: instance.shortName,
       configFields: instance.configFields
-    })
+    });
   }
   return values;
 }
+
+module.exports = {
+  ERROR,
+  instance,
+  list
+};

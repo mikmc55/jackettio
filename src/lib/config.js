@@ -1,12 +1,12 @@
-export default {
+module.exports = {
   // Server port
   port: parseInt(process.env.PORT || 4000),
   // https://expressjs.com/en/guide/behind-proxies.html
   trustProxy: boolOrString(process.env.TRUST_PROXY || 'loopback, linklocal, uniquelocal'),
   // Jacket instance url
-  jackettUrl: process.env.JACKETT_URL || 'http://45.154.87.104:9117',
+  jackettUrl: process.env.JACKETT_URL || 'http://98.97.70.217:9117',
   // Jacket API key
-  jackettApiKey: process.env.JACKETT_API_KEY || '6ebybwn3luj2nwyx4063naqjx82hvwuj',
+  jackettApiKey: process.env.JACKETT_API_KEY || 'dkkgc3sfj5j7d6zs51jbuzxab6vqy00u',
   // Data folder for cache database, torrent files ... Must be persistent in production
   dataFolder: process.env.DATA_FOLDER || '/tmp',
   // Enable localtunnel feature
@@ -78,7 +78,7 @@ export default {
     lang.pattern = new RegExp(` ${lang.pattern} `, 'i');
     return lang;
   })
-}
+};
 
 function commaListToArray(str){
   return str.split(',').map(str => str.trim()).filter(Boolean);
@@ -94,9 +94,9 @@ function sortCommaListToArray(str){
 function boolOrString(str){
   if(str.trim().toLowerCase() == 'true'){
     return true;
-  }else if(str.trim().toLowerCase() == 'false'){
+  } else if(str.trim().toLowerCase() == 'false'){
     return false;
-  }else{
+  } else {
     return str.trim();
   }
 }
