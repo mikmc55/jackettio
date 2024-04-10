@@ -12,7 +12,7 @@ export default {
   // Enable localtunnel feature
   localtunnel: (process.env.LOCALTUNNEL || 'false') === 'true',
   // Addon ID
-  addonId: process.env.ADDON_ID || 'community.stremio.jackettio',
+  addonId: process.env.ADDON_ID || 'cyc.stremio.jackettio',
   // When hosting an instance with a private tracker, you can configure this setting to:
   // - Request the user's passkey on the /configure page.
   // - Replace your passkey with theirs when sending uncached torrents to the debrid.
