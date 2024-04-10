@@ -84,7 +84,7 @@ app.get("/:userConfig?/manifest.json", async(req, res) => {
   const manifest = {
     id: config.addonId,
     version: addon.version,
-    name: addon.name,
+    name: addon.CYC,
     description: addon.description,
     icon: "https://avatars.githubusercontent.com/u/15383019?s=48&v=4",
     resources: ["stream"],
