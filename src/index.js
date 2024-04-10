@@ -55,7 +55,7 @@ app.get('/:userConfig?/configure', async(req, res) => {
     debrids: await debrid.list(),
     addon: {
       version: addon.version,
-      name: addon.name.charAt(0).toUpperCase() + addon.name.slice(1)
+      name: name: "CYC Jackett"
     },
     userConfig: req.params.userConfig || '',
     defaultUserConfig: config.defaultUserConfig,
