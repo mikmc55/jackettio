@@ -1,14 +1,14 @@
-const showdown = require('showdown');
-const express = require('express');
-const localtunnel = require('localtunnel');
-const { readFileSync } = require('fs');
-const config = require('./lib/config.js');
-const cache = require('./lib/cache.js');
-const path = require('path');
-const debrid = require('./lib/debrid.js');
-const { getIndexers } = require('./lib/jackett.js');
-const jackettio = require('./lib/jackettio.js');
-const { cleanTorrentFolder, createTorrentFolder } = require('./lib/torrentInfos.js');
+import showdown from 'showdown';
+import express from 'express';
+import localtunnel from 'localtunnel';
+import {readFileSync} from "fs";
+import config from './lib/config.js';
+import cache from './lib/cache.js';
+import path from 'path';
+import * as debrid from './lib/debrid.js';
+import {getIndexers} from './lib/jackett.js';
+import * as jackettio from "./lib/jackettio.js";
+import {cleanTorrentFolder, createTorrentFolder} from './lib/torrentInfos.js';
 
 const converter = new showdown.Converter();
 const welcomeMessageHtml = config.welcomeMessage ? `${converter.makeHtml(config.welcomeMessage)}<div class="my-4 border-top border-secondary-subtle"></div>` : '';
@@ -32,7 +32,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, 'static')));
+app.use(express.static(path.join(import.meta.dirname, 'static')));
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path.replace(/\/eyJ[\w\=]+/g, '/*******************')}`);
@@ -84,7 +84,7 @@ app.get("/:userConfig?/manifest.json", async(req, res) => {
   const manifest = {
     id: config.addonId,
     version: addon.version,
-    name: addon.ES,
+    name: addon.name,
     description: addon.description,
     icon: "https://avatars.githubusercontent.com/u/15383019?s=48&v=4",
     resources: ["stream"],
