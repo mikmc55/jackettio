@@ -1,5 +1,5 @@
 {
-  "name": "jackettio",
+  "name": "cyc jackettio",
   "version": "1.1.7",
   "description": "Jackett and Debrid on Stremio",
   "main": "src/index.js",
